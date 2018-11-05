@@ -1,0 +1,21 @@
+image: python:latest
+
+before_script:
+  - python -V                                   # Print out python version for debugging
+
+run:
+  script:
+  - python setup.py bdist_wheel --universal     # Build
+  - pip install dist/*                          # Install
+  - roll 2d8                                    # run
+  artifacts:
+    paths:
+    - dist/*.whl
+  
+upload:
+  script:
+  - pip install twine
+  - python setup.py bdist_wheel --universal     # Build
+  - twine upload dist/*                         # Upload to pypi
+  only:
+  - tags
