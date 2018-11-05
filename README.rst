@@ -1,3 +1,7 @@
+Fork of https://gitlab.xirion.net/vroest/dice-roller
+
+Mainly for adding direction-rolls
+
 Dice-Roller
 ===========
 
