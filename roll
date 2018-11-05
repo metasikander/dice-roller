@@ -27,10 +27,8 @@ def stats_roll():
 # Roll direction
 def dir_roll():
     dir_rolls = ''
-    dir2 = ['Left','Right','Stay'] #TODO: support for these dice
-    dir4 = ['N','E','S','W','Stay']
-    dir8 = ['N','NE','E','SE','S','SW','W','NW','Stay']
-    dir_rolls = str(random.choice(dir8))
+    dir = ['N','NE','E','SE','S','SW','W','NW','Stay']
+    dir_rolls = str(random.choice(dir))
 
     return dir_rolls
 
