@@ -26,7 +26,6 @@ def stats_roll():
 
 # Roll direction
 def dir_roll():
-    dir_rolls = ''
     dir = ['N','NE','E','SE','S','SW','W','NW','Stay']
     dir_rolls = str(random.choice(dir))
 
@@ -66,7 +65,8 @@ def dice_roller(input_text):
 
 # Prints helpful information (Its own function for easier expansion later)
 def info():
-    print('Syntax is: roll <dice_code>\nExample: roll 2d8 + 6 + d8\n')
+    print('Syntax is: roll <dice_code>\nExample: roll 2d8 + 6 + d8')
+    print('Instead of a dice code you can also put "stats" or "dir" for a stats roll or direction roll respectively')
 
 
 # Gets called whenever an error occurs
@@ -84,13 +84,13 @@ def main():
     # Commandline input handling
     input_list = sys.argv[1:]                    # Command line input (is a list)
     input_string = ''.join(input_list)           # Push everything together in a string
-    
+
     if 'stats' in input_string.lower():
         print(stats_roll())
         sys.exit(0)
 
     # Directionroll
-    if 'direction' in input_string.lower():
+    if 'dir' in input_string.lower():
         print(dir_roll())
         sys.exit(0)
 
