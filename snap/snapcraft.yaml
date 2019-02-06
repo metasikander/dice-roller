@@ -1,0 +1,21 @@
+name: roll
+base: core18
+version: '1.9'
+summary: A python dice rolling application using standard dice notation
+description: |
+  Syntax is: roll <dice_code>
+  Example: roll 2d8 + 6 + d8
+  Instead of a dice code you can also put "stats" or "dir" for a stats roll or direction roll respectively.
+
+grade: stable
+confinement: strict
+
+apps:
+  roll:
+    command: bin/roll
+
+parts:
+  diceroller:
+    plugin: python
+    python-version: python3
+    source: https://gitlab.xirion.net/vroest/dice-roller.git
