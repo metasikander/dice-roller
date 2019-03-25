@@ -2,11 +2,11 @@
 # coding: utf-8
 import sys
 import re
-import randomness
+import random
 
 try:
     # Use the system PRNG if possible
-    random = randomness.SystemRandom()
+    random = random.SystemRandom()
 except NotImplementedError:
     import warnings
     warnings.warn("A secure pseudo-random number generator is not available "
@@ -27,7 +27,7 @@ def stats_roll():
 # Roll direction
 def dir_roll():
     dir = ['N','NE','E','SE','S','SW','W','NW','Stay']
-    dir_rolls = str(randomness.choice(dir))
+    dir_rolls = str(random.choice(dir))
 
     return dir_rolls
 
@@ -51,7 +51,7 @@ def dice_roller(input_text):
 
         # Actually rolling the dice
         for t in range(times):
-            roll = randomness.randrange(1, sides + 1)
+            roll = random.randrange(1, sides + 1)
             rolls.append(str(roll) + "/" + str(sides))
             result += roll
 
