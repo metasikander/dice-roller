@@ -34,6 +34,16 @@ pip install --user dice-roller
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
 
+### Docker
+The docker image has been pushed to docker hub, and you can get it by running:  
+```
+docker run metasikander/dice-roller <dice code/stats/dir>
+```  
+If you prefer to build the image yourself, enter the Docker-folder and run:  
+```
+docker build --tag=dice-roller .
+```  
+
 ### Manual/Git install
 
 ``` sh
