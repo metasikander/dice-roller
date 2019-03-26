@@ -56,11 +56,11 @@ pip3 install --user .
 export PATH="${PATH}:${HOME}/.local/bin/"
 ```
 
-#### Arch Linux
+### Arch Linux
 
 `dice-roller` is available on the AUR as `dice-roller-git`.
 
-#### YUM-based distros (Fedora/CentOS/RHEL/++)
+### YUM-based distros (Fedora/CentOS/RHEL/++)
 Enter the RPM/packages-folder and run one of these commands.
 
 **On distros with yum:**  
