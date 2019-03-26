@@ -59,3 +59,19 @@ export PATH="${PATH}:${HOME}/.local/bin/"
 #### Arch Linux
 
 `dice-roller` is available on the AUR as `dice-roller-git`.
+
+#### YUM-based distros (Fedora/CentOS/RHEL/++)
+Enter the RPM/packages-folder and run one of these commands.
+
+**On distros with yum:**  
+```
+yum localinstall Dice-Roller-1.9-1.noarch.rpm
+```
+**On distros with dnf:**
+```
+dnf localinstall Dice-Roller-1.9-1.noarch.rpm
+```
+**Use rpm instead:**
+```
+rpm -i Dice-Roller-1.9-1.noarch.rpm
+```
