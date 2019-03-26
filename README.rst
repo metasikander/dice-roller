@@ -41,6 +41,10 @@ Pip install
     # (In your .bashrc, .zshrc etc)
     export PATH="${PATH}:${HOME}/.local/bin/"
 
+Docker
+~~~~~~
+
+
 Manual/Git install
 ~~~~~~~~~~~~~~~~~~
 
@@ -54,8 +58,6 @@ Manual/Git install
     # (In your .bashrc, .zshrc etc)
     export PATH="${PATH}:${HOME}/.local/bin/"
 
-OS/Distro Packages
-~~~~~~~~~~~~~~~~~~
 
 Arch Linux
 ^^^^^^^^^^
