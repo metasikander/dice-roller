@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "dice_roller",
+  "project_id": "3091f8fe-429b-492e-b67c-3902b16022f8"
+}
