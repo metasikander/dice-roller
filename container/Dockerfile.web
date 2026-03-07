@@ -1,0 +1,24 @@
+# Web interface for dice-roller.
+# No root required at build or runtime.
+#
+# Build (from repo root):
+#   buildah build -f container/Dockerfile.web -t dice-roller-web .
+#   podman build  -f container/Dockerfile.web -t dice-roller-web .
+#
+# Run:
+#   podman run --rm -p 5000:5000 dice-roller-web
+
+FROM python:3.13-alpine
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir flask>=3.0
+
+COPY --chmod=755 dice.py .
+COPY web/ web/
+
+USER 65532:65532
+
+EXPOSE 5000
+
+ENTRYPOINT ["python", "web/app.py"]

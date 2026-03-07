@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dice Roller</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: monospace;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            color: #222;
+            background: #fafafa;
+        }
+        h1 { margin-bottom: 1rem; }
+        .input-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            font-family: monospace;
+            font-size: 1rem;
+            border: 1px solid #888;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            font-family: monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 1px solid #888;
+            background: #fff;
+        }
+        button:hover { background: #eee; }
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        #result {
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            min-height: 3rem;
+            background: #fff;
+        }
+        .hint {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dice Roller</h1>
+    <p class="hint">Enter dice notation, e.g. 2d8+6, d20, 4d6+d4-2</p>
+
+    <div class="input-row">
+        <input type="text" id="notation" placeholder="2d8+6"
+               autofocus autocomplete="off">
+        <button id="btn-roll">Roll</button>
+    </div>
+
+    <div class="button-row">
+        <button id="btn-dir">Direction</button>
+        <button id="btn-stats">Stats Roll</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const notation = document.getElementById("notation");
+        const result   = document.getElementById("result");
+
+        function showResult(text) {
+            result.textContent = text;
+        }
+
+        function showError(text) {
+            result.textContent = "Error: " + text;
+        }
+
+        async function postForm(url, body) {
+            const resp = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: body || ""
+            });
+            return resp.json();
+        }
+
+        document.getElementById("btn-roll").addEventListener("click", async () => {
+            const val = notation.value.trim();
+            if (!val) { showError("Enter a dice notation first."); return; }
+            const data = await postForm("/roll", "notation=" + encodeURIComponent(val));
+            if (data.error) { showError(data.error); return; }
+            let lines = "Total: " + data.total;
+            data.rolls.forEach(r => {
+                lines += "\n  d" + r.sides + ": " + r.value;
+            });
+            showResult(lines);
+        });
+
+        notation.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                document.getElementById("btn-roll").click();
+            }
+        });
+
+        document.getElementById("btn-dir").addEventListener("click", async () => {
+            const data = await postForm("/direction");
+            showResult("Direction: " + data.direction);
+        });
+
+        document.getElementById("btn-stats").addEventListener("click", async () => {
+            const data = await postForm("/stats");
+            showResult(data.stats);
+        });
+    </script>
+</body>
+</html>

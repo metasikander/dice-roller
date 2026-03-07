@@ -1,0 +1,24 @@
+[project]
+name = "dice-roller"
+version = "1.9"
+description = "A dice-rolling application using standard dice notation"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Victor Roest", email = "victor@xirion.net" }]
+keywords = ["dnd", "dice"]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.urls]
+Homepage = "https://gitlab.xirion.net/vroest/dice-roller"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "flake8>=7.0",
+    "black>=24.0",
+    "mypy>=1.0",
+]
+web = [
+    "flask>=3.0",
+]

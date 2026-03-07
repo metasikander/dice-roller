@@ -1,150 +1,231 @@
-# Agent Instructions
+# AGENTS.md — Dice Roller
 
-This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+Guidelines for agentic coding agents working in this repository.
 
-## Quick Reference
+## Project Overview
 
+A Python 3 dice notation evaluator with a CLI (`roll`) and an optional Flask web
+interface (`web/app.py`). The core logic lives in `dice.py` at the repo root and
+is shared by both interfaces. The CLI has zero runtime dependencies (standard
+library only); the web interface requires Flask (installed via the `web`
+dependency group).
+
+- **Language:** Python 3
+- **Core module:** `dice.py` (shared dice-rolling logic)
+- **CLI entry point:** `roll` (executable script at repo root)
+- **Web entry point:** `web/app.py` (Flask application)
+- **License:** GPLv3
+
+---
+
+## Build, Install, and Run Commands
+
+This project uses **[uv](https://docs.astral.sh/uv/)** for environment and dependency management.
+
+### Set up the development environment
 ```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work atomically
-bd close <id>         # Complete work
-bd sync               # Sync with git
+uv sync          # creates .venv and installs all dev dependencies
 ```
 
-## Non-Interactive Shell Commands
-
-**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
-
-Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
-
-**Use these forms instead:**
+### Run directly (no install required)
 ```bash
-# Force overwrite without prompting
-cp -f source dest           # NOT: cp source dest
-mv -f source dest           # NOT: mv source dest
-rm -f file                  # NOT: rm file
+uv run python roll 2d8+6
+uv run python roll stats
+uv run python roll dir
+uv run python roll -h
 
-# For recursive operations
-rm -rf directory            # NOT: rm -r directory
-cp -rf source dest          # NOT: cp -r source dest
+# or activate the venv first:
+source .venv/bin/activate
+python roll 2d8+6
 ```
 
-**Other commands that may prompt:**
-- `scp` - use `-o BatchMode=yes` for non-interactive
-- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
-- `apt-get` - use `-y` flag
-- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
-
-<!-- BEGIN BEADS INTEGRATION -->
-## Issue Tracking with bd (beads)
-
-**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
-
-### Why bd?
-
-- Dependency-aware: Track blockers and relationships between issues
-- Version-controlled: Built on Dolt with cell-level merge
-- Agent-optimized: JSON output, ready work detection, discovered-from links
-- Prevents duplicate tracking systems and confusion
-
-### Quick Start
-
-**Check for ready work:**
-
+### Run via Docker
 ```bash
-bd ready --json
+# Build image
+docker build -f container/Dockerfile -t dice-roller .
+
+# Run
+docker run dice-roller 2d8+6
 ```
 
-**Create new issues:**
-
+### Add / remove dependencies
 ```bash
-bd create "Issue title" --description="Detailed context" -t bug|feature|task -p 0-4 --json
-bd create "Issue title" --description="What this issue is about" -p 1 --deps discovered-from:bd-123 --json
+uv add <package>            # runtime dependency
+uv add --dev <package>      # dev-only dependency
+uv remove <package>
 ```
 
-**Claim and update:**
+---
+
+## Testing
+
+**There is currently no test suite in this project.** pytest is included as a dev
+dependency and ready to use.
 
 ```bash
-bd update <id> --claim --json
-bd update bd-42 --priority 1 --json
+# Run all tests
+uv run pytest
+
+# Run a single test file
+uv run pytest tests/test_roll.py
+
+# Run a single test function
+uv run pytest tests/test_roll.py::test_dice_roller_basic
+
+# Run with verbose output
+uv run pytest -v tests/test_roll.py::test_dice_roller_basic
 ```
 
-**Complete work:**
+Place tests in a `tests/` directory, naming files `test_<module>.py` and test
+functions `test_<description>`.
+
+---
+
+## Linting and Formatting
+
+flake8, black, and mypy are included as dev dependencies. No config is currently
+enforced, but follow PEP 8 when contributing.
 
 ```bash
-bd close bd-42 --reason "Completed" --json
+# Lint
+uv run flake8 roll
+
+# Format
+uv run black roll
+
+# Type check
+uv run mypy roll
 ```
 
-### Issue Types
+---
 
-- `bug` - Something broken
-- `feature` - New functionality
-- `task` - Work item (tests, docs, refactoring)
-- `epic` - Large feature with subtasks
-- `chore` - Maintenance (dependencies, tooling)
+## CI/CD
 
-### Priorities
+The project uses **GitLab CI** (`.gitlab-ci.yml`). There is no `.github/workflows/`
+directory. The pipeline currently uses the legacy `setup.py` workflow and should be
+updated to use `uv` when CI is next touched.
 
-- `0` - Critical (security, data loss, broken builds)
-- `1` - High (major features, important bugs)
-- `2` - Medium (default, nice-to-have)
-- `3` - Low (polish, optimization)
-- `4` - Backlog (future ideas)
+---
 
-### Workflow for AI Agents
+## Code Style Guidelines
 
-1. **Check ready work**: `bd ready` shows unblocked issues
-2. **Claim your task atomically**: `bd update <id> --claim`
-3. **Work on it**: Implement, test, document
-4. **Discover new work?** Create linked issue:
-   - `bd create "Found bug" --description="Details about what was found" -p 1 --deps discovered-from:<parent-id>`
-5. **Complete**: `bd close <id> --reason "Done"`
+### General
 
-### Auto-Sync
+- Target **Python 3** exclusively. The shebang line must be `#!/usr/bin/env python3`.
+- Include the encoding declaration on line 2: `# coding: utf-8`.
+- Core dice-rolling logic lives in `dice.py`; the CLI (`roll`) and web interface
+  (`web/app.py`) both import from it. Keep this separation.
+- Follow **PEP 8**: 4-space indentation, max line length ~79 characters, two blank
+  lines between top-level definitions.
 
-bd automatically syncs with git:
+### Imports
 
-- Exports to `.beads/issues.jsonl` after changes (5s debounce)
-- Imports from JSONL when newer (e.g., after `git pull`)
-- No manual export/import needed!
+- Use only the **Python standard library** unless adding a dependency is explicitly
+  required. Current imports: `sys`, `re`, `random`.
+- Group imports as per PEP 8: standard library only (no third-party or local groups
+  currently apply). One import per line.
+- Do not use wildcard imports (`from module import *`).
 
-### Important Rules
+### Naming Conventions
 
-- ✅ Use bd for ALL task tracking
-- ✅ Always use `--json` flag for programmatic use
-- ✅ Link discovered work with `discovered-from` dependencies
-- ✅ Check `bd ready` before asking "what should I work on?"
-- ❌ Do NOT create markdown TODO lists
-- ❌ Do NOT use external issue trackers
-- ❌ Do NOT duplicate tracking systems
+| Construct | Convention | Example |
+|---|---|---|
+| Functions | `snake_case` | `dice_roller`, `stats_roll` |
+| Variables | `snake_case` | `input_text`, `dice_split` |
+| Constants | `UPPER_SNAKE_CASE` | `MAX_SIDES` |
+| Script entry | `main()` + `if __name__` guard | (see existing pattern) |
 
-For more details, see README.md and docs/QUICKSTART.md.
+- Use descriptive but terse names. Avoid single-letter variables except in tight
+  loops where the meaning is obvious.
 
-## Landing the Plane (Session Completion)
+### Types and Type Hints
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+- The existing code has **no type hints**. When adding new functions, add type
+  annotations for all parameters and return values:
+  ```python
+  def dice_roller(input_text: str) -> tuple[int, list[str]]:
+      ...
+  ```
+- Avoid using `Any` unless unavoidable.
 
-**MANDATORY WORKFLOW:**
+### Comments and Docstrings
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd sync
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+- The existing style uses short inline `# comment` lines above or beside code.
+- New functions should include a **one-line docstring** at minimum:
+  ```python
+  def stats_roll() -> str:
+      """Roll 4d6 drop-lowest six times and return formatted results."""
+      ...
+  ```
+- Avoid over-commenting; code should be self-explanatory where possible.
 
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+### Error Handling
 
-<!-- END BEADS INTEGRATION -->
+- Use `sys.exit(2)` for user-facing errors (invalid input, bad syntax).
+- Use `sys.exit(0)` for successful early exits.
+- Catch only **specific** exception types — never bare `except:` or `except Exception:`.
+- Print a helpful usage message before exiting on error (see `error()` and `info()`).
+- Warn users about degraded behavior with `warnings.warn(...)` rather than silently
+  falling back.
+
+### Known Anti-Patterns to Fix
+
+The existing code contains several Python 3 anti-patterns. Do not repeat them in
+new code, and fix them when touching the surrounding lines:
+
+| Anti-pattern | Correct alternative |
+|---|---|
+| `len(sys.argv) is 1` | `len(sys.argv) == 1` |
+| `dice_split[0] is not ''` | `dice_split[0] != ''` |
+| `eval()` on user-controlled input | Parse the expression explicitly |
+| String concatenation in loops | Use `str.join()` or a list |
+
+### Security
+
+- **Do not use `eval()`** on any data derived from user input. The current
+  implementation does this and it is a known issue — replace it with an explicit
+  arithmetic parser if refactoring `dice_roller`.
+- Use `random.SystemRandom()` for all random number generation (already done at the
+  top of `roll`). Do not use `random.random()` or `random.randint()` directly.
+
+---
+
+## Architecture Notes
+
+- All logic lives in **module-level functions** — no classes. Keep it that way unless
+  complexity justifies a class.
+- The `roll_dice` nested function inside `dice_roller` captures the outer `rolls` list
+  as a side effect. This is intentional; maintain the same contract when refactoring.
+- Each individual die result is stored in the format `"value/sides"` (e.g. `"4/6"`).
+  The stats roll reads this with `int(min(rolls).split("/")[0])`.
+- `dice_roller` returns a `(total, rolls)` tuple: the evaluated integer total and the
+  list of `"value/sides"` strings.
+
+---
+
+## Distribution Targets
+
+The project is distributed via:
+- **PyPI** (via `twine upload` on tagged releases)
+- **Docker Hub** (`metasikander/dice-roller`)
+- **AUR** (`dice-roller-git`) — tracked as a git submodule in `.gitmodules`
+- **RPM/tarball** — pre-built artifacts in `RPM/packages/`
+- **Snap** — `snap/snapcraft.yaml` (core18 base, version 1.9)
+
+When bumping the version, update: `setup.py` (`version=`), `snap/snapcraft.yaml`
+(`version:`), and the RPM spec if applicable.
+
+---
+
+## Issue Tracking
+
+This project uses **bd (beads)** for issue tracking.
+Run `bd prime` for workflow context, or install hooks (`bd hooks install`) for auto-injection.
+
+**Quick reference:**
+- `bd ready` - Find unblocked work
+- `bd create "Title" --type task --priority 2` - Create issue
+- `bd close <id>` - Complete work
+- `bd dolt push` - Push beads to remote
+
+For full workflow details: `bd prime`
